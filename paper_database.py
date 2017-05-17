@@ -19,11 +19,15 @@ class Author(BaseModel):
 
 
 class Paper(BaseModel):
-    author = ForeignKeyField(Author)
     title = peewee.TextField()
 
-db.drop_tables([Author,Paper])
-db.create_tables([Paper,Author], safe=True)
+class AuthorPaper(BaseModel):
+    author = ForeignKeyField(Author)
+    paper = ForeignKeyField(Paper)
+
+
+db.drop_tables([Author,AuthorPaper,Paper], safe=True)
+db.create_tables([Paper,AuthorPaper,Author], safe=True)
 
 
 # Add new author with the given fields
@@ -35,16 +39,18 @@ def add_author(title=None, first_name=None, middle_name=None, last_name=None):
 #function get author and title from test_file, save in table: paper
 # FIXME
 def add_paper(author_ids, title):
-    first_author_id = author_ids[0]
-    paper = Paper(author=first_author_id, title=title)
+    paper = Paper(title=title)
     paper.save()
+    for author_id in author_ids:
+        authorPaper = AuthorPaper(author=author_id, paper = paper.id)
+        authorPaper.save()
 
 # found out all paper by the author
 # FIXME
-def get_papers_by_author(author):
+def get_papers_by_author(author_id):
     list_paper = []                                                     #list to store
-    for book in Paper.filter(author=author):
-        list_paper.append(book)
+    for paper in Paper.select().join(AuthorPaper).join(Author).where((Author.id==author_id)):
+        list_paper.append(paper)
     return list_paper
 
 
