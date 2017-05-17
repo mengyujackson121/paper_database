@@ -24,8 +24,9 @@ class Paper(BaseModel):
 
 db.drop_tables([Author,Paper])
 db.create_tables([Paper,Author], safe=True)
+
+
 # Add new author with the given fields
-# FIXME
 def add_author(title=None, first_name=None, middle_name=None, last_name=None):
     author = Author(title=title, first_name=first_name, middle_name=middle_name, last_name=last_name)
     author.save()
@@ -33,8 +34,9 @@ def add_author(title=None, first_name=None, middle_name=None, last_name=None):
 
 #function get author and title from test_file, save in table: paper
 # FIXME
-def add_paper(author_id, title):
-    paper = Paper(author=author_id, title=title)
+def add_paper(author_ids, title):
+    first_author_id = author_ids[0]
+    paper = Paper(author=first_author_id, title=title)
     paper.save()
 
 # found out all paper by the author
